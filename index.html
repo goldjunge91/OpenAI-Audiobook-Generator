@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 
 <head>
     <title>
@@ -29,8 +29,21 @@
         <label for="file-upload">Upload .txt or .ePub File OR enter some text</label>
         <textarea id="text-input" name="text-input" rows="10" cols="50"
             placeholder="Paste or type text here"></textarea>
+    <!-- Language Section -->
+    <div id="language-section">
+        <label for="language">Choose your language</label>
+        <select id="language" class="form-select" aria-label="language" onchange="changeLanguage()">
+            <option value="de">German</option>
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="es">Spanish</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="zh">Chinese</option>
+        </select>
     </div>
-
 
     <!-- Voice Section -->
     <div id="voice-section">
@@ -84,6 +97,12 @@
         <p>Step 2: Creating your file: <progress id="progressbar2" value="0" max="0"></progress></p>
     </footer>
 
+    <script>
+        function changeLanguage() {
+            var language = document.getElementById("language").value;
+            document.documentElement.lang = language;
+        }
+    </script>
 
     <script src="jszip.min.js"></script>
     <script src="audiobuffer-to-wav.js"></script>

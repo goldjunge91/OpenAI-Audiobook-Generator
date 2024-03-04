@@ -1,0 +1,90 @@
+Sta
+
+Konsole
+
+Probleme
+
+Abdeckung
+
+Browser: Benutzerdefinierter Filter
+
+Nach Art gruppieren 3Versteckt
+
+A 'cache-control' header is missing or empty.
+
++
+
+Probleme von Drittanbietern einschlieBen Schweregrad: Standardebenen
+
+Kompatibilität
+
+Leistung
+
+2
+
+Betroffene Ressourcen
+ANFORDERUNG
+https://api.openai.com/v1/audio/speech
+
+Fehler
+
+WEITERLESEN
+Erfahren Sie, warum dies wichtig ist und wie Sie es auf webhint.io
+beheben können.
+
+Sicherheit
+
+Response should include 'x-content-type-options' header.
+
+Betroffene Ressourcen
+ANFORDERUNG
+https://api.openai.com/v1/audio/speech
+
+Fehler
+
+WEITERLESEN
+Erfahren Sie, warum dies wichtig ist und wie Sie es auf webhint.io
+beheben können.
+
+Andere
+
+3 CSS inline styles should not be used, move styles to an external CSS file
+
+Betroffene Ressourcen
+<div id="error-indicator" style="display: none;">
+
+Öffnen in Quellen
+
+ANFORDERUNG
+file:///C:/Users/MarcoTozzi/Documents/git/OpenAl-Audiobook-Gen
+erator/index.html
+
+<p style="color:red;">
+Öffnen in Quellen
+
+ANFORDERUNG
+file:///C:/Users/MarcoTozzi/Documents/git/OpenAl-Audiobook-Gen
+erator/index.html
+<div id="progress-indicator" style="display: none;">
+<p>Converting ...< /p>
+</div>
+
+Öffnen in Quellen
+
+ANFORDERUNG
+file:///C:/Users/Marco Tozzi/Documents/git/OpenAl-Audiobook-Gen
+erator/index.html
+
+A Warnung
+
+WEITERLESEN
+Erfahren Sie, warum dies wichtig ist und wie Sie es auf webhint.io
+beheben können.
+
+WEITERLESEN
+Erfahren Sie, warum dies wichtig ist und wie Sie es auf webhint.io
+beheben können.
+
+WEITERLESEN
+Erfahren Sie, warum dies wichtig ist und wie Sie es auf webhint.io
+beheben können.
