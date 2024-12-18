@@ -1,6 +1,42 @@
-document.getElementById('generate-audiobook').addEventListener('click', generateAudiobook);
+// Add isGenerating state to prevent duplicate generations
+let isGenerating = false;
+let generationId = null;
+
+document.getElementById('generate-audiobook').addEventListener('click', handleGeneration);
 
 console.log("Version 0.9.1");
+
+async function handleGeneration() {
+    // prevent for duplicate generation
+    if (isGenerating) {
+        console.log("Generation already in progress");
+        return;
+    }
+    const button = document.getElementById('generate-audiobook');
+    const errorIndicator = document.getElementById("error-indicator");
+
+    // Visual feedback - disable button and show processing state
+    button.disabled =true;
+    button.classList.add("Processing");
+    button.textContent = "Processing....";
+    isGenerating = true;
+
+    // Generate unique ID 
+    generateId = Date.now().toString();
+    try {
+        await generateAudiobook();
+    } catch (error) {
+        console.error("Erorr in generation:", error);
+        errorIndicator.style.display = 'block';
+    } finally {
+    button.disabled =false;
+    button.classList.remove("Processing");
+    button.textContent = "Generate AudioBook";
+    isGenerating = false;
+    generateId = null;
+    }
+}
+
 
 async function mergeAudioBlobsAndDownload(audioBlobs) {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -80,8 +116,11 @@ function triggerDownload(blob, filename) {
 
 
 function generateAudiobook() {
-    var text = document.getElementById('text-input').value;
-    var apiKey = document.getElementById('api-key').value;
+    // change var to const https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/
+    const text = document.getElementById('text-input').value;
+    const apiKey = document.getElementById('api-key').value;
+    const currentGenerationId = generationId;  // Store current generation ID
+
     var segments = splitTextIntoSegments(text, 4000);
     var audioBlobs = new Array(segments.length);
     var progressBar = document.getElementById('progressbar1');

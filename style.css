@@ -36,6 +36,15 @@ header {
     font-size: 1rem;
     text-align: center;
 }
+/* css for handle click */
+#generate-audiobook:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+#generate-audiobook.processing {
+    background-color: #28a745; /* Green color to show active processing */
+}
+/* end of it */
 footer {
     text-align: center;
     padding: 20px;

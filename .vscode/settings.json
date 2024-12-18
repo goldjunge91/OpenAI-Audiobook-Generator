@@ -20,5 +20,8 @@
         "terminal.ansiRed": "#F07178",
         "terminal.ansiWhite": "#959DCB",
         "terminal.ansiYellow": "#FFCB6B"
-    }
+    },
+    "cSpell.words": [
+        "audiobook"
+    ]
 }
