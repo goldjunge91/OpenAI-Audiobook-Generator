@@ -16,7 +16,7 @@ async function handleGeneration() {
     const errorIndicator = document.getElementById("error-indicator");
 
     // Visual feedback - disable button and show processing state
-    button.disabled =true;
+    button.disabled = true;
     button.classList.add("Processing");
     button.textContent = "Processing....";
     isGenerating = true;
@@ -26,17 +26,16 @@ async function handleGeneration() {
     try {
         await generateAudiobook();
     } catch (error) {
-        console.error("Erorr in generation:", error);
+        console.error("Error in generation:", error);
         errorIndicator.style.display = 'block';
     } finally {
-    button.disabled =false;
-    button.classList.remove("Processing");
-    button.textContent = "Generate AudioBook";
-    isGenerating = false;
-    generateId = null;
+        button.disabled = false;
+        button.classList.remove("Processing");
+        button.textContent = "Generate AudioBook";
+        isGenerating = false;
+        generateId = null;
     }
 }
-
 
 async function mergeAudioBlobsAndDownload(audioBlobs) {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -72,14 +71,12 @@ function concatenateWAVBuffers(wavBuffers) {
     // Copy the header from the first buffer (44 bytes)
     concatenatedBuffer.set(new Uint8Array(wavBuffers[0].slice(0, 44)));
 
-    // Update the total file size field in the header (4 bytes after "RIFF")
     const totalSize = 36 + dataLength;
     concatenatedBuffer[4] = (totalSize & 0xff);
     concatenatedBuffer[5] = ((totalSize >> 8) & 0xff);
     concatenatedBuffer[6] = ((totalSize >> 16) & 0xff);
     concatenatedBuffer[7] = ((totalSize >> 24) & 0xff);
 
-    // Update the total data chunk size field (4 bytes after "data")
     const dataSize = dataLength;
     concatenatedBuffer[40] = (dataSize & 0xff);
     concatenatedBuffer[41] = ((dataSize >> 8) & 0xff);
@@ -88,7 +85,6 @@ function concatenateWAVBuffers(wavBuffers) {
 
     // Concatenate the actual data chunks
     let offset = 44;
-
     var progressBar = document.getElementById('progressbar2');
     progressBar.max = totalSize;
     progressBar.value = offset;
@@ -101,10 +97,8 @@ function concatenateWAVBuffers(wavBuffers) {
     console.log("Individual buffer sizes:", wavBuffers.map(b => b.byteLength));
     console.log("Concatenated buffer size:", concatenatedBuffer.byteLength);
 
-
     return concatenatedBuffer.buffer;
 }
-
 
 function triggerDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
@@ -114,17 +108,15 @@ function triggerDownload(blob, filename) {
     a.click();
 }
 
-
 function generateAudiobook() {
-    // change var to const https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/
-    const text = document.getElementById('text-input').value;
-    const apiKey = document.getElementById('api-key').value;
-    const currentGenerationId = generationId;  // Store current generation ID
+    var text = document.getElementById('text-input').value;
+    var apiKey = document.getElementById('api-key').value;
+    var currentGenerationId = generationId;  // Store current generation ID
 
     var segments = splitTextIntoSegments(text, 4000);
     var audioBlobs = new Array(segments.length);
     var progressBar = document.getElementById('progressbar1');
-	document.getElementById('error-indicator').style.display = 'none';
+    document.getElementById('error-indicator').style.display = 'none';
     progressBar.max = segments.length;
     progressBar.value = 0;
 
@@ -144,7 +136,6 @@ function generateAudiobook() {
             progressBar.value = audioBlobs.filter(Boolean).length;
 
             if (audioBlobs.filter(Boolean).length === segments.length) {
-                // All segments are loaded, merge them!
                 mergeAudioBlobsAndDownload(audioBlobs);
             } else {
                 setTimeout(processQueue, delayBetweenCalls); // Process the next segment after a delay
@@ -169,7 +160,6 @@ function splitTextIntoSegments(text, maxLength) {
         currentSegment += sentence + '. ';
     });
 
-    // Add the last segment if it's not empty
     if (currentSegment.trim() !== '') {
         segments.push(currentSegment);
     }
@@ -182,7 +172,7 @@ function callOpenAIAPI(segment, apiKey, callback) {
     xhr.open("POST", "https://api.openai.com/v1/audio/speech", true);
     xhr.setRequestHeader("Authorization", "Bearer " + apiKey);
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.responseType = 'blob'; // Expect a binary response
+    xhr.responseType = 'blob';
 
     xhr.onload = function () {
         if (xhr.status === 200) {
@@ -190,7 +180,7 @@ function callOpenAIAPI(segment, apiKey, callback) {
             callback(audioBlob);
         } else {
             console.error("Error calling OpenAI API: " + xhr.statusText);
-			document.getElementById('error-indicator').style.display = 'block';
+            document.getElementById('error-indicator').style.display = 'block';
         }
     };
 
@@ -204,7 +194,6 @@ function callOpenAIAPI(segment, apiKey, callback) {
     });
     xhr.send(data);
 }
-
 
 document.addEventListener('DOMContentLoaded', function () {
     var textInput = document.getElementById('text-input');
@@ -222,6 +211,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleFileUpload(event) {
         var file = event.target.files[0];
+        console.log('File uploaded:', file.name, 'Type:', file.type); // Debug log
+
         if (file) {
             if (file.type === 'text/plain') {
                 var reader = new FileReader();
@@ -230,6 +221,66 @@ document.addEventListener('DOMContentLoaded', function () {
                     calculateCost();
                 };
                 reader.readAsText(file);
+            } else if (file.type === 'application/pdf') {
+                console.log('Processing PDF file'); // Debug log
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    console.log('PDF loaded into reader'); // Debug log
+                    const arrayBuffer = e.target.result;
+                    pdfjsLib.getDocument(arrayBuffer).promise
+                        .then(function(pdf) {
+                            console.log('PDF document loaded, pages:', pdf.numPages); // Debug log
+                            let fullText = '';
+                            const progressBar = document.getElementById('progressbar1');
+                            progressBar.max = pdf.numPages;
+                            progressBar.value = 0;
+                            
+                            let promise = Promise.resolve();
+                            for (let i = 1; i <= pdf.numPages; i++) {
+                                promise = promise
+                                    .then(() => {
+                                        console.log('Processing page:', i); // Debug log
+                                        return pdf.getPage(i);
+                                    })
+                                    .then((page) => page.getTextContent())
+                                    // .then((content) => {
+                                    //     const pageText = content.items
+                                    //         .map(item => item.str)
+                                    //         .join(' ');
+                                    //     console.log(`Page ${i} first 100 chars:`, pageText.substring(0, 100)); // Debug log
+                                    //     fullText += pageText + '\n\n';
+                                    //     progressBar.value = i;
+                                    // });
+                                    // Update this part of the handleFileUpload function:
+                                .then((content) => {
+                                    console.log('Raw content items:', content.items); // Debug what's in the content
+                                    const pageText = content.items
+                                        .map(item => {
+                                            console.log('Item:', item); // Debug individual items
+                                            return item.str;
+                                        })
+                                        .join(' ');
+                                    console.log(`Page ${i} raw text:`, pageText); // Show the actual text
+                                    fullText += pageText + '\n\n';
+                                    progressBar.value = i;
+                                });
+                            }
+                            
+                            return promise.then(() => fullText);
+                        })
+                        .then((text) => {
+                            console.log('Total text extracted length:', text.length); // Debug log
+                            const cleanedText = cleanPDFText(text);
+                            console.log('Cleaned text length:', cleanedText.length); // Debug log
+                            document.getElementById('text-input').value = cleanedText;
+                            calculateCost();
+                        })
+                        .catch(function(error) {
+                            console.error('Error reading PDF:', error);
+                            alert('Error reading PDF file.');
+                        });
+                };
+                reader.readAsArrayBuffer(file);
             } else if (file.name.endsWith('.epub')) {
                 var reader = new FileReader();
                 reader.onload = function (e) {
@@ -238,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
                 reader.readAsBinaryString(file);
             } else {
-                alert('Please upload a text or ePub file.');
+                alert('Please upload a text, PDF, or ePub file.');
             }
         }
     }
@@ -272,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return tempDiv.textContent || tempDiv.innerText || '';
     }
 
-
     function filterUnwantedContent(text) {
         // Remove page numbers and bibliographies
         // Adjust these regex patterns as needed based on the actual content structure
@@ -286,3 +336,17 @@ document.addEventListener('DOMContentLoaded', function () {
         return text.replace(/\s+/g, ' ').trim();
     }
 });
+
+function cleanPDFText(text) {
+    console.log('Text before cleaning:', text); // See what we're getting
+    const cleaned = text
+        .replace(/\s+/g, ' ')
+        .replace(/(\w+)-\s*\n\s*(\w+)/g, '$1$2')
+        .replace(/\n\s*\d+\s*\n/g, '\n')
+        .replace(/^\s*(.+?)\s*\n{2,}/gm, '\n')
+        .replace(/\r\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    console.log('Text after cleaning:', cleaned); // See what we're producing
+    return cleaned;
+}
